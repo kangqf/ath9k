@@ -1,14 +1,18 @@
-# 安装依赖库
+#!/bin/bash
+sudo apt-get update
 sudo apt-get install libncurses5-dev libncursesw5-dev
-
 # 以下为可选 可以clone 整个内核 或是 clone drivers 部分
 UNAME_R=3.13.0-32-generic
 UBUNTU_KERNEL_TAG=Ubuntu-3.13.0-32.57
 
 # git clone git://kernel.ubuntu.com/ubuntu/ubuntu-${DISTRIB_CODENAME}.git
 # git checkout ${UBUNTU_KERNEL_TAG}
-
-git clone https://github.com/kangqf/ath9k.git 
+if [ -d ath9k ];
+then
+ 	echo "has downloaded "
+else
+	git clone https://github.com/kangqf/ath9k.git 
+fi
 
 mkdir ~/ubuntu-trusty
 mkdir ~/ubuntu-trusty/drivers
@@ -37,10 +41,9 @@ make -C /lib/modules/${UNAME_R}/build M=$(pwd)/drivers/net/wireless/ath/ath9k mo
 #install module
 cd /lib/modules/${UNAME_R}/kernel/drivers/net/wireless/ath/ath9k
 for file in ./*.ko; do sudo mv $file $file.orig; done
-cp ubuntu-trusty/drivers/net/wireless/ath/ath9k/*.ko .
+sudo cp ~/ubuntu-trusty/drivers/net/wireless/ath/ath9k/*.ko .
 sudo depmod
 sudo modprobe *.ko
 echo -e " you need run sudo reboot"
 
 #check the module infomation
-# modinfo ath9k_hw
